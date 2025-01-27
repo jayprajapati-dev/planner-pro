@@ -148,39 +148,116 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize all animations
-    initializeAnimations();
-    initParallax();
-    initSmoothScroll();
-    initFeatureCards();
-    initFloatingAnimation();
-    initWhatsAppButton();
-    initPricingAnimation();
+    // Limited Offer Timer
+    const initOfferTimer = () => {
+        const timerElement = document.getElementById('offerTimer');
+        if (!timerElement) return;
 
-    // Mobile Menu Toggle
+        // Set end time to 24 hours from now
+        const endTime = new Date();
+        endTime.setHours(endTime.getHours() + 24);
+
+        const updateTimer = () => {
+            const now = new Date();
+            const timeDiff = endTime - now;
+
+            if (timeDiff <= 0) {
+                timerElement.innerHTML = "Offer Ended!";
+                return;
+            }
+
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            timerElement.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        // Update timer immediately and then every second
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    };
+
+    // Mobile-specific optimizations
+    const isMobile = window.innerWidth <= 768;
+
+    // Optimize animations for mobile
+    if (isMobile) {
+        // Disable intensive animations on mobile
+        const initFeatureCardsMobile = () => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach(card => {
+                card.addEventListener('touchstart', () => {
+                    card.style.transform = 'scale(0.98)';
+                });
+                card.addEventListener('touchend', () => {
+                    card.style.transform = 'scale(1)';
+                });
+            });
+        };
+
+        // Simplified floating animation for mobile
+        const initFloatingAnimationMobile = () => {
+            const heroImage = document.querySelector('.hero-image img');
+            if (heroImage) {
+                heroImage.style.animation = 'float 3s ease-in-out infinite';
+            }
+        };
+
+        // Optimize scroll performance
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    // Handle scroll events here
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        initFeatureCardsMobile();
+        initFloatingAnimationMobile();
+    } else {
+        initFeatureCards();
+        initFloatingAnimation();
+    }
+
+    // Enhanced Mobile Menu Toggle
     const initMobileMenu = () => {
         const burger = document.querySelector('.burger');
         const nav = document.querySelector('.nav-links');
         const navLinks = document.querySelectorAll('.nav-links a');
+        const overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
 
-        if (burger && nav) {
-            burger.addEventListener('click', () => {
-                nav.classList.toggle('nav-active');
-                
-                // Animate links
-                navLinks.forEach((link, index) => {
-                    if (link.style.animation) {
-                        link.style.animation = '';
-                    } else {
-                        link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
-                    }
-                });
+        const toggleMenu = () => {
+            nav.classList.toggle('nav-active');
+            burger.classList.toggle('active');
+            document.body.style.overflow = nav.classList.contains('nav-active') ? 'hidden' : '';
+            overlay.style.display = nav.classList.contains('nav-active') ? 'block' : 'none';
+        };
 
-                // Burger animation
-                burger.classList.toggle('toggle');
+        burger.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('nav-active');
+                burger.classList.remove('active');
+                document.body.style.overflow = '';
+                overlay.style.display = 'none';
             });
-        }
+        });
     };
 
+    // Initialize all animations
+    initializeAnimations();
+    initParallax();
+    initSmoothScroll();
+    initWhatsAppButton();
+    initPricingAnimation();
+    initOfferTimer();
     initMobileMenu();
 });
