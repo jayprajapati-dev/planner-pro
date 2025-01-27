@@ -1410,7 +1410,7 @@ html {
 
 .page-title {
     font-size: 2.5rem;
-    color: var(--primary-color);
+    color: #007BFF;
     margin-bottom: 2rem;
     text-align: center;
 }
