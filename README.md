@@ -77,4 +77,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-**Made with ❤️ by Planner Pro Team**
+**Made with ❤️ by Jay Prajapati(Planner Pro Team)**
